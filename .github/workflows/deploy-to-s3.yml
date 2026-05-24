@@ -23,8 +23,15 @@ jobs:
 
     - name: Deploy to S3
       run: |
-        aws s3 sync . s3://marujos.dev --delete
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: us-east-1 # Altere para a sua região
+        # Apenas arquivos públicos do site; nunca .env, .git ou metadados do repositório
+        aws s3 sync . s3://marujos.dev --delete \
+          --exclude "*" \
+          --include "index.html" \
+          --include "img/*" \
+          --include "docs/*"
+
+    - name: Invalidar cache do CloudFront
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id E3USRZR1Z2T41Z \
+          --paths "/*"
