@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Marujos.dev',
+  description = 'Portfolio de Flavio Filipe — desenvolvedor full-stack.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="pt-BR" class="bg-slate-950">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="bg-slate-950 text-white antialiased">
+    <slot />
+
+    <script>
+      import Lenis from '@studio-freight/lenis';
+
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+
+      function raf(time: number) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+    </script>
+
+    <!-- GSAP + ScrollTrigger carregados de forma lazy para não afetar TBT/LCP -->
+    <script>
+      const initAnimations = async () => {
+        const { init } = await import('../scripts/animations');
+        init();
+      };
+
+      const schedule = () => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(initAnimations, { timeout: 3000 });
+        } else {
+          setTimeout(initAnimations, 300);
+        }
+      };
+
+      if (document.readyState === 'complete') {
+        schedule();
+      } else {
+        window.addEventListener('load', schedule, { once: true });
+      }
+    </script>
+  </body>
+</html>

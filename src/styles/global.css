@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* Elementos com animação GSAP — iniciam ocultos, revelados pelo ScrollTrigger */
+[data-animate="reveal"] {
+  opacity: 0;
+  transform: translateY(32px);
+}
+[data-animate="stagger-group"] > * {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* Sem animação para quem prefere movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  [data-animate="reveal"],
+  [data-animate="stagger-group"] > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

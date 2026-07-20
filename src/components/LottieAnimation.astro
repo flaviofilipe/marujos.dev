@@ -1,0 +1,64 @@
+---
+interface Props {
+  /** Caminho do arquivo JSON Lottie (relativo à pasta public). */
+  src: string;
+  /** Classes Tailwind extras para o container. */
+  className?: string;
+}
+
+const { src, className = '' } = Astro.props;
+---
+
+<!--
+  aria-hidden="true" — animação puramente decorativa.
+  opacity-0          — invisível até o Lottie renderizar o primeiro frame,
+                       evitando flash de container vazio.
+-->
+<div
+  class={`opacity-0 transition-opacity duration-700 ${className}`}
+  data-lottie-src={src}
+  aria-hidden="true"
+></div>
+
+<script>
+  const players = document.querySelectorAll<HTMLElement>('[data-lottie-src]');
+
+  if (players.length) {
+    const init = async () => {
+      // lottie_svg: build SVG-only (~30 KiB gzip vs 77 KiB do bundle completo).
+      // Elimina renderers canvas/html que nunca usamos (65% do código era morto).
+      const { default: lottie } = await import('lottie-web/build/player/lottie_svg');
+
+      players.forEach((el) => {
+        lottie.loadAnimation({
+          container: el,
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          // encodeURI preserva barras, encode apenas caracteres como espaços
+          path: encodeURI(el.dataset.lottieSrc!),
+        });
+
+        // Fade-in após o primeiro frame ser renderizado pelo Lottie
+        setTimeout(() => {
+          el.classList.remove('opacity-0');
+          el.classList.add('opacity-100');
+        }, 150);
+      });
+    };
+
+    const schedule = () => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(init, { timeout: 2000 });
+      } else {
+        setTimeout(init, 200); // Safari fallback
+      }
+    };
+
+    if (document.readyState === 'complete') {
+      schedule();
+    } else {
+      window.addEventListener('load', schedule, { once: true });
+    }
+  }
+</script>

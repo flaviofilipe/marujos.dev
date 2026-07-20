@@ -1,0 +1,99 @@
+---
+interface Props {
+  /** URL do modelo exportado pelo Spline (Viewer / Web). */
+  url: string;
+}
+
+const { url } = Astro.props;
+
+const isPlaceholder = !url || url.includes('COLE-SUA-URL') || url.includes('PLACEHOLDER');
+---
+
+<!--
+  hidden md:block  →  oculta em mobile, aparece como bloco no desktop.
+  inert            →  bloqueia foco e interação com AT (acessibilidade).
+-->
+<div
+  id="spline-wrapper"
+  class="relative hidden h-[460px] w-full overflow-hidden md:block lg:h-[540px]"
+  data-url={url}
+  data-placeholder={isPlaceholder ? 'true' : 'false'}
+  inert
+>
+  <!-- Skeleton animado exibido enquanto a cena carrega -->
+  <div id="spline-skeleton" class="absolute inset-0 flex items-center justify-center">
+    <span class="absolute h-52 w-52 animate-ping rounded-full bg-violet-500/5 ring-1 ring-violet-500/10 [animation-duration:3s]"></span>
+    <span class="absolute h-40 w-40 animate-ping rounded-full bg-cyan-500/5   ring-1 ring-cyan-500/10  [animation-duration:3s] [animation-delay:0.6s]"></span>
+    <span class="absolute h-28 w-28 animate-ping rounded-full bg-fuchsia-500/5 ring-1 ring-fuchsia-500/10 [animation-duration:3s] [animation-delay:1.2s]"></span>
+
+    {isPlaceholder && (
+      <p class="relative z-10 max-w-[200px] text-center text-xs leading-relaxed text-slate-600">
+        Adicione a URL do Spline em <code class="text-slate-500">Hero.astro</code>
+      </p>
+    )}
+  </div>
+
+  <!--
+    <spline-viewer> fica no DOM desde o início SEM o atributo `url`.
+    O atributo só é definido via JS após o evento 'load' + idle do browser,
+    garantindo que FCP / LCP / TBT do Lighthouse não sejam impactados.
+  -->
+  <spline-viewer
+    id="spline-viewer"
+    loading="lazy"
+    class="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-700"
+    style="--spline-viewer-background:transparent;"
+  ></spline-viewer>
+</div>
+
+<script>
+  const wrapper  = document.getElementById('spline-wrapper');
+  const viewer   = document.getElementById('spline-viewer') as HTMLElement;
+  const skeleton = document.getElementById('spline-skeleton');
+
+  if (!wrapper || !viewer || !skeleton) throw new Error('[SplineScene] elementos não encontrados');
+
+  if (wrapper.dataset.placeholder === 'true') {
+    throw new Error('[SplineScene] URL não configurada — skeleton exibido como decoração');
+  }
+
+  const sceneUrl = wrapper.dataset.url!;
+
+  function revealViewer() {
+    skeleton.style.display = 'none';
+    viewer.style.opacity   = '1';
+  }
+
+  function activateScene() {
+    viewer.setAttribute('url', sceneUrl);
+    viewer.addEventListener('load', revealViewer, { once: true });
+    setTimeout(revealViewer, 8000);
+  }
+
+  function injectSplineScript() {
+    if (document.querySelector('script[data-spline]')) {
+      customElements.whenDefined('spline-viewer').then(activateScene);
+      return;
+    }
+    const script = document.createElement('script');
+    script.type  = 'module';
+    script.setAttribute('data-spline', '');
+    script.src   = 'https://unpkg.com/@splinetool/viewer@1.9.96/build/spline-viewer.js';
+    script.onload = () => customElements.whenDefined('spline-viewer').then(activateScene);
+    document.head.appendChild(script);
+  }
+
+  function scheduleLoad() {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(injectSplineScript, { timeout: 3000 });
+    } else {
+      setTimeout(injectSplineScript, 200);
+    }
+  }
+
+  if (document.readyState === 'complete') {
+    scheduleLoad();
+  } else {
+    window.addEventListener('load', scheduleLoad, { once: true });
+  }
+</script>

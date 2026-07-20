@@ -1,0 +1,136 @@
+---
+// Nenhuma prop — header é global
+---
+
+<header
+  id="site-header"
+  class="fixed left-0 right-0 top-0 z-50 transition-all duration-300"
+>
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 text-sm font-bold tracking-tight text-white">
+      <span aria-hidden="true">⚓</span>
+      Marujos
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-7 md:flex" aria-label="Navegação principal">
+      <a href="#diferenciais" class="text-sm text-slate-400 transition-colors duration-200 hover:text-white">Diferenciais</a>
+      <a href="#processo"     class="text-sm text-slate-400 transition-colors duration-200 hover:text-white">Como trabalhamos</a>
+      <a href="#projetos"     class="text-sm text-slate-400 transition-colors duration-200 hover:text-white">Projetos</a>
+      <!-- <a href="#equipe"       class="text-sm text-slate-400 transition-colors duration-200 hover:text-white">Equipe</a> -->
+      <!-- <a href="#depoimentos"  class="text-sm text-slate-400 transition-colors duration-200 hover:text-white">Depoimentos</a> -->
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <!-- Desktop CTA -->
+      <!-- FAKE — substituir pelo link real de agendamento -->
+      <a
+        href="https://calendly.com/marujos/consultoria"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hidden rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 px-5 py-2 text-sm font-semibold text-white transition-all duration-200 hover:from-violet-500 hover:to-cyan-400 hover:shadow-[0_0_20px_-4px_rgba(139,92,246,0.5)] md:inline-flex"
+      >
+        Agendar conversa
+      </a>
+
+      <!-- Mobile hamburger button -->
+      <button
+        id="menu-toggle"
+        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white md:hidden"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <!-- Ícone muda via CSS com atributo aria-expanded -->
+        <svg id="icon-hamburger" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="4" y1="6"  x2="20" y2="6"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="18" x2="20" y2="18"/>
+        </svg>
+        <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="hidden">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="max-h-0 overflow-hidden border-t border-transparent bg-slate-950/95 backdrop-blur-md transition-all duration-300 md:hidden"
+    aria-hidden="true"
+  >
+    <nav class="flex flex-col gap-1 px-6 py-4" aria-label="Navegação mobile">
+      <a href="#diferenciais" class="rounded-lg px-3 py-2.5 text-sm text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white">Diferenciais</a>
+      <a href="#processo"     class="rounded-lg px-3 py-2.5 text-sm text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white">Como trabalhamos</a>
+      <a href="#projetos"     class="rounded-lg px-3 py-2.5 text-sm text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white">Projetos</a>
+      <a href="#equipe"       class="rounded-lg px-3 py-2.5 text-sm text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white">Equipe</a>
+      <a href="#depoimentos"  class="rounded-lg px-3 py-2.5 text-sm text-slate-300 transition-colors hover:bg-slate-800/60 hover:text-white">Depoimentos</a>
+      <!-- FAKE — substituir pelo link real -->
+      <a
+        href="https://calendly.com/marujos/consultoria"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-2 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 px-5 py-2.5 text-center text-sm font-semibold text-white"
+      >
+        Agendar conversa
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  #site-header.scrolled {
+    background-color: rgba(5, 6, 13, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  #mobile-menu.open {
+    max-height: 360px;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
+</style>
+
+<script>
+  const header = document.getElementById("site-header")!;
+  const toggle = document.getElementById("menu-toggle")!;
+  const menu   = document.getElementById("mobile-menu")!;
+  const iconHamburger = document.getElementById("icon-hamburger")!;
+  const iconClose     = document.getElementById("icon-close")!;
+
+  // Scroll: adiciona classe .scrolled após 40px
+  const updateHeader = () => {
+    if (window.scrollY > 40) {
+      header.classList.add("scrolled");
+    } else {
+      header.classList.remove("scrolled");
+    }
+  };
+  window.addEventListener("scroll", updateHeader, { passive: true });
+  updateHeader();
+
+  // Mobile menu toggle
+  toggle.addEventListener("click", () => {
+    const isOpen = menu.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+    menu.setAttribute("aria-hidden", String(!isOpen));
+    iconHamburger.classList.toggle("hidden", isOpen);
+    iconClose.classList.toggle("hidden", !isOpen);
+  });
+
+  // Fechar ao clicar num link
+  menu.querySelectorAll("a").forEach((a) => {
+    a.addEventListener("click", () => {
+      menu.classList.remove("open");
+      toggle.setAttribute("aria-expanded", "false");
+      menu.setAttribute("aria-hidden", "true");
+      iconHamburger.classList.remove("hidden");
+      iconClose.classList.add("hidden");
+    });
+  });
+</script>

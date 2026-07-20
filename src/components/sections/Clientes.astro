@@ -1,0 +1,55 @@
+---
+import { clients } from '../../data/clients';
+// Duplica para o loop infinito do marquee
+const doubled = [...clients, ...clients];
+---
+
+<section class="overflow-hidden py-20" aria-label="Empresas que confiam na Marujos">
+
+  <div data-animate="reveal" class="mb-10 text-center">
+    <p class="text-xs font-medium uppercase tracking-widest text-slate-500">
+      Empresas que já navegaram com a gente
+    </p>
+  </div>
+
+  <!-- Fade nas bordas -->
+  <div
+    class="marquee-wrapper relative"
+    style="mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+           -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);"
+  >
+    <div class="marquee-track flex items-center gap-12" aria-hidden="true">
+      {doubled.map((client) => (
+        <img
+          src={client.logo}
+          alt={`Logo da ${client.name}`}
+          height="32"
+          class="h-8 w-auto max-w-[140px] shrink-0 object-contain grayscale opacity-50 transition-all duration-300 hover:grayscale-0 hover:opacity-100"
+          loading="lazy"
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .marquee-track {
+    width: max-content;
+    animation: marquee-scroll 28s linear infinite;
+  }
+
+  .marquee-wrapper:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+</style>

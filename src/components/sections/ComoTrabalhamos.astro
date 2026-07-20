@@ -1,0 +1,57 @@
+---
+import { process } from '../../data/process';
+---
+
+<section id="processo" class="mx-auto max-w-6xl px-6 py-24">
+
+  <div data-animate="reveal" class="mb-16 text-center">
+    <p class="mb-3 text-xs font-medium uppercase tracking-widest text-slate-400">
+      Como trabalhamos
+    </p>
+    <h2 class="text-3xl font-bold text-white sm:text-4xl">
+      Do diagnóstico à operação,{' '}
+      <span class="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent">
+        sem enrolação
+      </span>
+    </h2>
+    <p class="mx-auto mt-4 max-w-xl text-base text-slate-400">
+      Um processo enxuto pensado para times que não podem esperar meses por resultado.
+    </p>
+  </div>
+
+  <div class="relative">
+    <!-- Linha conectora horizontal (desktop) — animada pelo GSAP com scrub -->
+    <div
+      class="process-connector absolute left-[12.5%] right-[12.5%] top-[4.25rem] hidden h-px bg-gradient-to-r from-violet-500/40 via-slate-600/60 to-cyan-500/40 md:block"
+      aria-hidden="true"
+      style="transform-origin: left center; will-change: transform;"
+    ></div>
+
+    <!-- Linha vertical (mobile) -->
+    <div class="absolute left-[1.125rem] top-0 h-full w-px bg-slate-800 md:hidden" aria-hidden="true"></div>
+
+    <div data-animate="stagger-group" class="grid grid-cols-1 gap-14 md:grid-cols-4 md:gap-6">
+      {process.map((step) => (
+        <div class="relative pl-10 md:pl-0">
+          <!-- Bullet mobile -->
+          <div class="absolute left-0 top-1 h-4 w-4 rounded-full border-2 border-violet-500 bg-slate-950 md:hidden" aria-hidden="true"></div>
+
+          <!-- Número watermark -->
+          <p class="mb-3 text-[4.5rem] font-black leading-none text-white/[0.04] md:mb-4">
+            {String(step.step).padStart(2, '0')}
+          </p>
+
+          <!-- Dot no centro da linha (desktop) -->
+          <div class="mb-5 hidden h-3 w-3 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 ring-4 ring-violet-500/15 md:block" aria-hidden="true"></div>
+
+          <h3 class="text-base font-semibold text-white md:text-lg">
+            {step.title}
+          </h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-400">
+            {step.description}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
